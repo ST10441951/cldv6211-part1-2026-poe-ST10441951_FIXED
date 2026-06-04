@@ -1,0 +1,102 @@
+@* EventEase Elite - Event Profile
+    Author: Joshua Marc Lourens
+    Description: Comprehensive event review. Displays the event's classification,
+    primary venue, schedule, and every linked booking through navigation property
+    mapping. (Rebuilt to bind to the Event model - previously mis-scaffolded to Booking.)
+*@
+
+@model EventEase.Models.Event
+
+@{
+    ViewData["Title"] = "Event Profile";
+}
+
+<div class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="venue-card-manage p-5">
+                @* HEADER: record tag + primary key reference *@
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="stat-pill text-primary">EVENT RECORD</span>
+                    <span class="fw-black text-muted">ID : #@Model.EventID</span>
+                </div>
+
+                <h1 class="fw-black text-uppercase mb-2 hero-glow-text" style="font-size: 2.8rem; letter-spacing: -0.5px;">
+                    @Model.EventName
+                </h1>
+
+                @* CLASSIFICATION: surfaces the EventType lookup value *@
+                @if (Model.EventType != null)
+                {
+                    <span class="stat-pill mb-4 d-inline-block">
+                        <i class="bi bi-tag-fill me-1"></i>@Model.EventType.EventTypeName
+                    </span>
+                }
+
+                <p class="text-muted fw-bold mb-5">@Model.EventDescription</p>
+
+                @* OPERATIONAL DATA: split between primary venue and schedule window *@
+                <div class="row g-5 pt-2 border-top">
+                    <div class="col-md-6 border-end pt-4">
+                        <div class="fw-black text-muted small text-uppercase mb-1" style="letter-spacing: 1px;">Primary Venue</div>
+                        <div class="fw-black h4 text-dark">@(Model.Venue?.VenueName ?? "Unassigned")</div>
+                        <div class="text-muted small fw-bold">@Model.Venue?.VenueLocation</div>
+                    </div>
+                    <div class="col-md-6 pt-4">
+                        <div class="fw-black text-muted small text-uppercase mb-1" style="letter-spacing: 1px;">Schedule Window</div>
+                        <div class="d-flex align-items-center gap-2 mt-1">
+                            <span class="stat-pill text-dark">@Model.EventStartDate.ToString("dd MMM yyyy")</span>
+                            <i class="bi bi-arrow-right text-muted"></i>
+                            <span class="stat-pill text-dark">@Model.EventEndDate.ToString("dd MMM yyyy")</span>
+                        </div>
+                    </div>
+                </div>
+
+                @* LINKED BOOKINGS: every reservation tied to this event *@
+                <div class="mt-5 pt-4 border-top">
+                    <div class="fw-black text-muted small text-uppercase mb-3" style="letter-spacing: 1px;">
+                        Linked Bookings (@Model.Bookings.Count)
+                    </div>
+
+                    @if (Model.Bookings.Any())
+                    {
+                        <div class="d-flex flex-column gap-2">
+                            @foreach (var booking in Model.Bookings)
+                            {
+                                <div class="d-flex justify-content-between align-items-center bg-light p-3">
+                                    <div class="fw-bold small">
+                                        <i class="bi bi-geo-alt-fill text-primary me-1"></i>@booking.Venue?.VenueName
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-muted small fw-bold">
+                                            @booking.BookingStartDate.ToString("dd MMM") - @booking.BookingEndDate.ToString("dd MMM yyyy")
+                                        </span>
+                                        <span class="stat-pill">@booking.BookingStatus</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted small fw-bold mb-0">No bookings are currently linked to this event.</p>
+                    }
+                </div>
+
+                @* ACTIONS *@
+                <div class="d-flex gap-3 pt-5 mt-4 border-top">
+                    <a asp-action="Edit" asp-route-id="@Model.EventID" class="btn btn-brand-elite px-5">EDIT RECORD</a>
+                    <a asp-action="Index" class="btn btn-white border fw-black small px-4 text-decoration-none pt-2">BACK TO LIST</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* TECHNICAL REFERENCES
+   ---------------------------------------------------
+   1. Navigation Property Loading: Displaying related Venue, EventType and Bookings via Entity Framework Core eager loading.
+   2. Null-Conditional Rendering: Safely handling unassigned venues / classifications with the ?. operator.
+   3. UI Grid System: 50/50 split for high-readability technical data visualization.
+   4. String Formatting: Converting DateOnly values into specialist-readable dates.
+*@

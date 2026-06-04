@@ -1,0 +1,479 @@
+/* EventEase Elite - NieR / YoRHa Interface System
+    Author: Joshua Marc Lourens
+    Project: Venue Management System (Administrative Infrastructure)
+    Design Language: Parchment palette, angular bracket framing, monochrome sepia
+    ink, subtle paper grain, and inverse (dark-fill) selection states - inspired by
+    the YoRHa terminal UI. All theme tokens live in :root, so the entire portal can
+    be re-skinned (e.g. to the dark "hacking" variant) by editing a handful of vars.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap');
+
+/* --- 0. THEME TOKENS ---
+   Flip these to retheme the whole system. Cream menu variant is active. */
+:root {
+    --bg: #ffffff; /* page background (white) */
+    --bg-frame: #f4f2ec; /* subtle warm band (nav / footer / wells) */
+    --panel: #ffffff; /* card + surface tone */
+    --panel-alt: #f4f2ec; /* recessed surface (inputs, image wells) */
+    --ink: #454138; /* primary text + hard borders */
+    --ink-soft: #6c6759; /* secondary / muted text */
+    --line: rgba(69, 65, 56, 0.35); /* hairline rules */
+    --accent: #7a6a47; /* warm bronze emphasis (links, icons, highlights) */
+    --accent-rgb: 122, 106, 71; /* accent as rgb, for bg-opacity utilities */
+    --danger: #8a3a2a; /* desaturated YoRHa warning red */
+    --inverse-bg: #454138; /* selected / primary fill */
+    --inverse-ink: #d7d2c3; /* text rendered on an inverse fill */
+}
+
+/* --- 1. CORE ENGINE --- */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Jost', sans-serif !important;
+    background-color: var(--bg) !important;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    letter-spacing: 0.2px;
+    position: relative;
+}
+
+/* Paper grain - the signature YoRHa texture, laid over everything but inert */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* HUD frame - a thin inset border around the viewport (kept below the navbar) */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 9px;
+    z-index: 1000;
+    pointer-events: none;
+    border: 1px solid var(--line);
+}
+
+::selection {
+    background: var(--inverse-bg);
+    color: var(--inverse-ink);
+}
+
+/* Angular by default - YoRHa UI has no soft corners */
+.rounded, .rounded-0, .rounded-1, .rounded-2, .rounded-3, .rounded-4, .rounded-5,
+.rounded-pill, .rounded-circle, .rounded-top, .rounded-bottom,
+.card, .btn, .form-control, .form-select, .input-group, .input-group-text,
+.dropdown-menu, .dropdown-item, .alert, .stat-pill {
+    border-radius: 0 !important;
+}
+
+/* Crisp borders replace soft SaaS shadows */
+.shadow, .shadow-sm, .shadow-lg {
+    box-shadow: none !important;
+}
+
+/* High-impact weight (Jost tops out at 700; remap the old 900 utility) */
+.fw-black {
+    font-weight: 700 !important;
+}
+
+.tracking-tight {
+    letter-spacing: 0.5px;
+}
+
+.transition-all {
+    transition: all 0.25s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 6px 6px 0 rgba(69, 65, 56, 0.16);
+}
+
+/* --- 2. BOOTSTRAP UTILITY RE-TINTS ---
+   Retinting the utilities the views already use repaints every page at once. */
+.text-primary {
+    color: var(--accent) !important;
+}
+
+.text-dark {
+    color: var(--ink) !important;
+}
+
+.text-muted {
+    color: var(--ink-soft) !important;
+}
+
+.text-danger {
+    color: var(--danger) !important;
+}
+
+.bg-light {
+    background-color: var(--panel-alt) !important;
+}
+
+.bg-white {
+    background-color: var(--panel) !important;
+}
+
+.bg-primary {
+    /* Honour Bootstrap's bg-opacity-* utilities so tinted chips stay readable
+       (was a solid fill, which made bronze-on-bronze text invisible) */
+    background-color: rgba(var(--accent-rgb), var(--bs-bg-opacity, 1)) !important;
+}
+
+.border, .border-top, .border-bottom, .border-start, .border-end {
+    border-color: var(--line) !important;
+}
+
+/* --- 3. NAVBAR (flat YoRHa header) --- */
+nav.navbar {
+    backdrop-filter: none;
+    background: var(--bg-frame) !important;
+    border-bottom: 1px solid var(--ink) !important;
+    padding: 0.7rem 0;
+}
+
+.navbar-brand {
+    letter-spacing: 3px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink) !important;
+    text-transform: uppercase;
+}
+
+.navbar-nav .nav-link {
+    color: var(--ink) !important;
+    position: relative;
+    padding-left: 1rem !important;
+    transition: color 0.15s ease;
+}
+
+    .navbar-nav .nav-link:hover {
+        color: var(--accent) !important;
+    }
+
+    /* YoRHa menu cursor: a small square that snaps in on hover */
+    .navbar-nav .nav-link::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 7px;
+        height: 7px;
+        background: var(--ink);
+        transform: translateY(-50%) scale(0);
+        transition: transform 0.15s ease;
+    }
+
+    .navbar-nav .nav-link:hover::before {
+        transform: translateY(-50%) scale(1);
+    }
+
+/* --- 4. TYPOGRAPHY / HERO EMPHASIS --- */
+.hero-glow-text {
+    font-weight: 700 !important;
+    text-shadow: none;
+    color: var(--accent);
+}
+
+/* --- 5. DASHBOARD BUBBLES (home modules) --- */
+.col-dashboard {
+    display: flex;
+}
+
+.dashboard-bubble {
+    background: var(--panel);
+    border: 1px solid var(--ink) !important;
+    padding: 3rem 2rem;
+    transition: all 0.25s ease;
+    text-decoration: none !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+}
+
+    .dashboard-bubble:hover {
+        transform: translateY(-4px);
+        border-color: var(--ink) !important;
+        box-shadow: 8px 8px 0 rgba(69, 65, 56, 0.18) !important;
+    }
+
+    .dashboard-bubble i {
+        font-size: 3.2rem;
+        color: var(--accent);
+        margin-bottom: 1.5rem;
+        transition: transform 0.25s ease;
+    }
+
+    .dashboard-bubble:hover i {
+        transform: scale(1.08);
+    }
+
+/* --- 6. PANEL CARDS (venues / events / wrappers) --- */
+.venue-card-manage {
+    background: var(--panel);
+    border: 1px solid var(--ink) !important;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: visible !important;
+}
+
+    .venue-card-manage:hover {
+        transform: translateY(-2px);
+        box-shadow: 6px 6px 0 rgba(69, 65, 56, 0.15) !important;
+        border-color: var(--ink) !important;
+    }
+
+    /* YoRHa bracket corners */
+    .venue-card-manage::before,
+    .venue-card-manage::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .venue-card-manage::before {
+        top: -1px;
+        left: -1px;
+        border-top: 2px solid var(--ink);
+        border-left: 2px solid var(--ink);
+    }
+
+    .venue-card-manage::after {
+        bottom: -1px;
+        right: -1px;
+        border-bottom: 2px solid var(--ink);
+        border-right: 2px solid var(--ink);
+    }
+
+/* Image wells inside venue cards (these classes were previously undefined) */
+.img-container {
+    width: 100%;
+    height: 210px;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 1px solid var(--ink);
+    background: var(--panel-alt);
+}
+
+    .img-container img {
+        filter: saturate(0.9) contrast(1.03);
+    }
+
+.shadow-inner {
+    box-shadow: inset 0 0 0 1px var(--line);
+}
+
+/* --- 7. BUTTONS & UI --- */
+.btn-brand-elite {
+    background: var(--inverse-bg);
+    color: var(--inverse-ink) !important;
+    border: 1px solid var(--ink);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 12px 26px;
+    font-size: 0.78rem;
+    transition: all 0.2s ease;
+}
+
+    .btn-brand-elite:hover {
+        background: var(--bg);
+        color: var(--ink) !important;
+        box-shadow: 4px 4px 0 var(--ink);
+    }
+
+.btn-white {
+    background: transparent;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+    .btn-white:hover {
+        background: var(--inverse-bg);
+        border-color: var(--ink);
+        color: var(--inverse-ink) !important;
+    }
+
+/* Squared outline tags */
+.stat-pill {
+    background: transparent;
+    border: 1px solid var(--ink);
+    padding: 5px 12px;
+    font-weight: 600;
+    font-size: 0.68rem;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* --- 8. FORMS --- */
+.form-control, .form-select {
+    background: var(--panel-alt) !important;
+    border: 1px solid var(--ink) !important;
+    color: var(--ink) !important;
+    font-weight: 500;
+}
+
+    /* Beat Bootstrap's .border-0 / .bg-* utilities used on inline inputs */
+    .form-control.border-0, .form-select.border-0 {
+        border: 1px solid var(--ink) !important;
+    }
+
+    .form-control.bg-transparent, .form-control.bg-light, .form-control.bg-white {
+        background: var(--panel-alt) !important;
+    }
+
+    .form-control::placeholder {
+        color: var(--ink-soft);
+        opacity: 0.75;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.8rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background: var(--panel) !important;
+        border-color: var(--ink) !important;
+        color: var(--ink) !important;
+        box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--ink) !important;
+    }
+
+.input-group-text {
+    background: var(--panel-alt);
+    border: 1px solid var(--ink);
+    color: var(--ink-soft);
+}
+
+.form-check-input {
+    border: 1px solid var(--ink);
+    background-color: var(--panel-alt);
+}
+
+    .form-check-input:checked {
+        background-color: var(--inverse-bg);
+        border-color: var(--ink);
+    }
+
+    .form-check-input:focus {
+        box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--ink);
+    }
+
+/* --- 9. DROPDOWN MENUS --- */
+.dropdown-menu {
+    background: var(--panel);
+    border: 1px solid var(--ink) !important;
+    padding: 0.4rem !important;
+}
+
+.dropdown-item {
+    color: var(--ink);
+    font-weight: 500;
+}
+
+    .dropdown-item:hover {
+        background: var(--inverse-bg);
+        color: var(--inverse-ink);
+    }
+
+    .dropdown-item.text-danger:hover {
+        background: var(--danger);
+        color: #fff !important;
+    }
+
+/* --- 10. ALERTS --- */
+.alert {
+    border: 1px solid var(--ink);
+}
+
+.alert-danger {
+    background: var(--panel);
+    color: var(--danger);
+    border-left: 5px solid var(--danger);
+}
+
+.alert-success {
+    background: var(--panel);
+    color: var(--ink);
+    border-left: 5px solid var(--ink);
+}
+
+/* --- 11. LANDING PAGE HELPERS --- */
+.challenge-card {
+    border-left: 4px solid var(--danger) !important;
+}
+
+.module-card {
+    border-top: 4px solid var(--accent) !important;
+}
+
+.workflow-connector {
+    position: relative;
+}
+
+@media (min-width: 992px) {
+    .workflow-connector::after {
+        content: '\F138';
+        font-family: "bootstrap-icons";
+        position: absolute;
+        right: -10%;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--ink);
+        opacity: 0.4;
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-btns {
+        flex-direction: column;
+    }
+}
+
+/* --- 12. SCROLLBAR (webkit) --- */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-frame);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--ink);
+    border: 3px solid var(--bg-frame);
+}
+
+/* ---------------------------------------------------
+   REFERENCES & ATTRIBUTIONS
+   ---------------------------------------------------
+   1. Typography: Jost (geometric sans) via Google Fonts API (https://fonts.google.com/specimen/Jost)
+   2. Design Language: YoRHa / NieR:Automata menu UI - parchment palette, bracket framing, inverse selection.
+   3. Procedural Grain: SVG feTurbulence noise as a CSS data-URI (https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feTurbulence)
+   4. Theming: CSS Custom Properties for single-source re-skinning (https://developer.mozilla.org/en-US/docs/Web/CSS/--*)
+   5. Iconography: Bootstrap Icons v1.11.1 (https://icons.getbootstrap.com/)
+   6. Spacing & Grid: Bootstrap 5.3 Grid System (https://getbootstrap.com/docs/5.3/layout/grid/)
+*/

@@ -1,0 +1,94 @@
+﻿@* EventEase Elite - Event Modification
+    Author: Joshua Marc Lourens
+    Description: Administrative interface for updating existing event records.
+    Ensures synchronization between event details and their assigned venues.
+*@
+
+@model EventEase.Models.Event
+
+@{
+    ViewData["Title"] = "Edit Event";
+}
+
+<div class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-8">
+            <div class="venue-card-manage p-5 shadow-sm">
+                @* HEADER: Specifically for Events *@
+                <h2 class="fw-black text-uppercase mb-4" style="letter-spacing: -1.5px;">
+                    EDIT <span class="text-primary hero-glow-text">EVENT</span>
+                </h2>
+                
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+                    
+                    @* Hidden Primary Key *@
+                    <input type="hidden" asp-for="EventID" />
+
+                    @* EVENT NAME *@
+                    <div class="mb-3">
+                        <label asp-for="EventName" class="fw-black small text-muted text-uppercase mb-2 d-block" style="letter-spacing: 1px;">Event Identity</label>
+                        <input asp-for="EventName" class="form-control border-0 bg-light p-3 rounded-4 fw-bold" />
+                        <span asp-validation-for="EventName" class="text-danger small"></span>
+                    </div>
+
+                    @* DESCRIPTION *@
+                    <div class="mb-3">
+                        <label asp-for="EventDescription" class="fw-black small text-muted text-uppercase mb-2 d-block" style="letter-spacing: 1px;">Brief Description</label>
+                        <textarea asp-for="EventDescription" class="form-control border-0 bg-light p-3 rounded-4 fw-bold" rows="3"></textarea>
+                        <span asp-validation-for="EventDescription" class="text-danger small"></span>
+                    </div>
+
+                    @* VENUE SELECTION *@
+                    <div class="mb-3">
+                        <label asp-for="VenueID" class="fw-black small text-muted text-uppercase mb-2 d-block" style="letter-spacing: 1px;">Physical Location</label>
+                        <select asp-for="VenueID" class="form-control border-0 bg-light p-3 rounded-4 fw-bold" asp-items="ViewBag.VenueID"></select>
+                        <span asp-validation-for="VenueID" class="text-danger small"></span>
+                    </div>
+
+                    @* EVENT TYPE: Re-classify the event against the predefined lookup taxonomy *@
+                    <div class="mb-3">
+                        <label asp-for="EventTypeID" class="fw-black small text-muted text-uppercase mb-2 d-block" style="letter-spacing: 1px;">Event Classification</label>
+                        <select asp-for="EventTypeID" class="form-control border-0 bg-light p-3 rounded-4 fw-bold" asp-items="ViewBag.EventTypeID">
+                            <option value="">: SELECT TYPE :</option>
+                        </select>
+                        <span asp-validation-for="EventTypeID" class="text-danger small"></span>
+                    </div>
+
+                    @* TIMELINE *@
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="EventStartDate" class="fw-black small text-muted text-uppercase mb-2 d-block">Start Date</label>
+                            <input asp-for="EventStartDate" type="date" class="form-control border-0 bg-light p-3 rounded-4 fw-bold" />
+                            <span asp-validation-for="EventStartDate" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="EventEndDate" class="fw-black small text-muted text-uppercase mb-2 d-block">End Date</label>
+                            <input asp-for="EventEndDate" type="date" class="form-control border-0 bg-light p-3 rounded-4 fw-bold" />
+                            <span asp-validation-for="EventEndDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    @* ACTIONS *@
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-brand-elite py-3">SAVE CHANGES</button>
+                        <a asp-action="Index" class="fw-black text-muted text-center text-decoration-none small">CANCEL AND RETURN</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+@* TECHNICAL REFERENCES
+   ---------------------------------------------------
+   1. Strong Typing: Using @model EventEase.Models.Event to ensure correct model binding.
+   2. Hidden Input: Mapping the EventID primary key for the POST modification.
+   3. View State: Utilizing ViewBag.VenueID to maintain the relational link to the Venue table.
+*@

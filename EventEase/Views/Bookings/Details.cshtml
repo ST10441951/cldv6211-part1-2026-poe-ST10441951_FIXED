@@ -1,0 +1,56 @@
+﻿@* EventEase Elite - Booking Details
+    File Path: Views/Bookings/Details.cshtml
+*@
+
+@model EventEase.Models.Booking
+
+<div class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="venue-card-manage p-5 shadow-sm">
+                <div class="mb-3">
+                    <span class="stat-pill text-primary bg-primary bg-opacity-10 px-3 py-2 text-uppercase fw-black small">Allocation Profile</span>
+                </div>
+                
+                <h1 class="fw-black text-uppercase mb-4 hero-glow-text" style="font-size: 2.5rem; letter-spacing: -1px;">
+                    Booking <span class="text-primary">#@Model.BookingID</span>
+                </h1>
+
+                <div class="row g-4 mb-5 border-top pt-5">
+                    @* Associated Event *@
+                    <div class="col-md-6">
+                        <div class="fw-black text-muted small text-uppercase mb-2">Associated Event</div>
+                        <div class="fw-black h4 text-dark">@Model.Event?.EventName</div>
+                    </div>
+
+                    @* Target Venue *@
+                    <div class="col-md-6">
+                        <div class="fw-black text-muted small text-uppercase mb-2">Target Venue</div>
+                        <div class="fw-black h4 text-primary">@Model.Venue?.VenueName</div>
+                    </div>
+
+                    @* Timeline *@
+                    <div class="col-md-6">
+                        <div class="fw-black text-muted small text-uppercase mb-2">Duration</div>
+                        <div class="fw-bold fs-5">
+                            @Model.BookingStartDate.ToString("dd MMM yyyy")
+                            <i class="bi bi-arrow-right mx-2 text-muted"></i>
+                            @Model.BookingEndDate.ToString("dd MMM yyyy")
+                        </div>
+                    </div>
+
+                    @* Status *@
+                    <div class="col-md-6">
+                        <div class="fw-black text-muted small text-uppercase mb-2">Verification Status</div>
+                        <span class="badge rounded-pill bg-dark px-4 py-2 text-uppercase">@Model.BookingStatus</span>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-3 pt-4 border-top">
+                    <a asp-action="Edit" asp-route-id="@Model.BookingID" class="btn btn-brand-elite px-5">MODIFY RECORD</a>
+                    <a asp-action="Index" class="btn btn-white border fw-black small px-4 shadow-sm text-decoration-none pt-2">BACK TO LEDGER</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

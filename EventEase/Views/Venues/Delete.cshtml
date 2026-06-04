@@ -1,0 +1,60 @@
+﻿@* EventEase Elite - Decommission Venue
+    Author: Joshua Marc Lourens
+    Description: Centered safety-check for removing venue records. 
+    Uses semantic red coloring to emphasize the 'Delete' operation.
+*@
+
+@model EventEase.Models.Venue
+
+<div class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 text-center">
+            @* The border-danger accent provides an immediate visual
+               cue that this is a destructive action.
+            *@
+            <div class="venue-card-manage p-5 shadow-sm border-danger border-opacity-25">
+                <div class="mb-4">
+                    <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 3.5rem;"></i>
+                </div>
+                
+                <h2 class="fw-black text-uppercase mb-3" style="letter-spacing: -1px;">
+                    CONFIRM <span class="text-danger">DELETION</span>
+                </h2>
+                
+                <p class="text-muted fw-bold small mb-5" style="letter-spacing: 1px;">
+                    YOU ARE ABOUT TO REMOVE THIS RECORD PERMANENTLY.
+                </p>
+
+                @* Context Block: Re-stating the venue name so the specialist
+                   can verify the target before confirmation.
+                *@
+                <div class="bg-light p-4 rounded-4 mb-5 text-start border">
+                    <div class="fw-black text-muted small text-uppercase mb-1" style="font-size: 0.7rem;">Target Venue</div>
+                    <div class="fw-black h5 m-0 text-dark">@Model.VenueName</div>
+                    <hr class="my-3 opacity-10">
+                    <div class="fw-black text-muted small text-uppercase mb-1" style="font-size: 0.7rem;">Location</div>
+                    <div class="fw-bold small text-muted">@Model.VenueLocation</div>
+                </div>
+
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="VenueID" />
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn btn-brand-elite py-3 shadow-sm" style="background: #dc3545 !important;">
+                            PERMANENTLY DELETE
+                        </button>
+                        <a asp-action="Index" class="fw-black text-muted text-decoration-none small">
+                            CANCEL AND KEEP RECORD
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* TECHNICAL REFERENCES
+   ---------------------------------------------------
+   1. Confirmation-Action Pattern: Security principle for reducing accidental data loss.
+   2. Semantic Color Mapping: Using industry-standard 'Danger' palettes for destructive CRUD events.
+   3. Referential Integrity: Administrative checks to ensure deletion does not orphan linked data.
+*@

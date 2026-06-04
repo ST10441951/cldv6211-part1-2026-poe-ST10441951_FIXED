@@ -1,0 +1,159 @@
+﻿@* EventEase Elite - Events Directory
+    Author: Joshua Marc Lourens
+    Description: The central hub for administrative event scheduling. 
+    Implements a search-driven interface for high-efficiency record retrieval.
+*@
+
+@model IEnumerable<EventEase.Models.Event>
+
+<div class="container py-5 mt-4">
+    @* --- TOP HEADER ---
+       Using the Elite brand pattern with the Hero Glow effect on the 
+       primary keyword to establish administrative context.
+    *@
+    <div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-3">
+        <div>
+            <h1 class="fw-black text-dark m-0 text-uppercase tracking-tight" style="font-size: 2.5rem; letter-spacing: -1px;">
+                OUR <span class="text-primary hero-glow-text">EVENTS</span>
+            </h1>
+            <p class="text-muted fw-bold small text-uppercase mt-2" style="letter-spacing: 2px;">Administrative Schedule Hub</p>
+        </div>
+        
+        <a asp-action="Create" class="btn btn-brand-elite shadow-sm">
+            <i class="bi bi-calendar-plus me-2"></i> Register Event
+        </a>
+    </div>
+
+    @* --- ELITE ADVANCED FILTERING ENGINE ---
+       Four combinable gates: free-text Keyword, EventType classification, a
+       scheduling Date Range, and a live Venue Availability toggle. Every value is
+       echoed back via ViewData/ViewBag so the controls retain their state after a
+       query, letting specialists drill into the directory during high-volume periods.
+    *@
+    @{ var availableOnly = (bool?)ViewData["AvailableOnly"] ?? false; }
+    <div class="venue-card-manage p-4 mb-5 bg-light border-0 shadow-sm">
+        <form asp-action="Index" method="get">
+            <div class="row g-3 align-items-end">
+                @* GATE 1 - Free-text keyword *@
+                <div class="col-lg-3 col-md-6">
+                    <label class="fw-black small text-muted text-uppercase mb-2 d-block" style="letter-spacing: 1px;">Keyword</label>
+                    <input type="text" name="searchString" value="@ViewData["CurrentFilter"]"
+                           class="form-control border-0 bg-white p-3 rounded-4 fw-bold"
+                           placeholder="Name or description..." />
+                </div>
+
+                @* GATE 2 - EventType classification (lookup-driven dropdown) *@
+                <div class="col-lg-3 col-md-6">
+                    <label class="fw-black small text-muted text-uppercase mb-2 d-block" style="letter-spacing: 1px;">Event Type</label>
+                    <select name="eventTypeId" class="form-control border-0 bg-white p-3 rounded-4 fw-bold" asp-items="ViewBag.EventTypeId">
+                        <option value="">: ALL TYPES :</option>
+                    </select>
+                </div>
+
+                @* GATE 3 - Date range (from) *@
+                <div class="col-lg-2 col-md-4">
+                    <label class="fw-black small text-muted text-uppercase mb-2 d-block" style="letter-spacing: 1px;">From</label>
+                    <input type="date" name="startDate" value="@ViewData["StartDate"]"
+                           class="form-control border-0 bg-white p-3 rounded-4 fw-bold" />
+                </div>
+
+                @* GATE 3 - Date range (to) *@
+                <div class="col-lg-2 col-md-4">
+                    <label class="fw-black small text-muted text-uppercase mb-2 d-block" style="letter-spacing: 1px;">To</label>
+                    <input type="date" name="endDate" value="@ViewData["EndDate"]"
+                           class="form-control border-0 bg-white p-3 rounded-4 fw-bold" />
+                </div>
+
+                @* GATE 4 - Live venue availability toggle *@
+                <div class="col-lg-2 col-md-4">
+                    <label class="fw-black small text-muted text-uppercase mb-2 d-block" style="letter-spacing: 1px;">Availability</label>
+                    <div class="form-check form-switch ps-0 d-flex align-items-center gap-2 pt-2">
+                        <input class="form-check-input ms-0" type="checkbox" role="switch" id="availableOnly"
+                               name="availableOnly" value="true" @(availableOnly ? "checked" : "") />
+                        <label class="form-check-label fw-bold small text-muted text-uppercase" for="availableOnly">Free venues only</label>
+                    </div>
+                </div>
+            </div>
+
+            @* ACTION ROW: apply the composed filter set or reset every gate *@
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-brand-elite px-4">
+                    <i class="bi bi-funnel-fill me-2"></i> APPLY FILTERS
+                </button>
+                <a asp-action="Index" class="btn btn-white border fw-black small px-4 shadow-sm text-decoration-none pt-2">CLEAR ALL</a>
+            </div>
+        </form>
+    </div>
+
+    @* --- EVENTS GRID ---
+       Using a flexbox grid to display event cards. Each card implements 
+       the lift effect and three-dot management menu.
+    *@
+    <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="venue-card-manage p-4 d-flex flex-column h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h4 class="fw-black m-0 text-uppercase tracking-tight text-primary">@item.EventName</h4>
+                            
+                            @* Dropdown: Uses the Elite menu pattern for clean CRUD access *@
+                            <div class="dropdown">
+                                <button class="btn btn-white btn-sm rounded-circle shadow-sm" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 rounded-4">
+                                    <li><a class="dropdown-item rounded-3 fw-bold small py-2" asp-action="Edit" asp-route-id="@item.EventID"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                                    <li><a class="dropdown-item rounded-3 fw-bold small py-2 text-danger" asp-action="Delete" asp-route-id="@item.EventID"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        @* CLASSIFICATION BADGE: surfaces the EventType lookup value *@
+                        @if (item.EventType != null)
+                        {
+                            <span class="stat-pill text-primary bg-primary bg-opacity-10 px-3 py-1 mb-3 d-inline-block fw-black text-uppercase" style="font-size: 0.65rem; letter-spacing: 1px;">
+                                <i class="bi bi-tag-fill me-1"></i>@item.EventType.EventTypeName
+                            </span>
+                        }
+
+                        <p class="text-muted fw-bold small flex-grow-1">
+                            @item.EventDescription
+                        </p>
+
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="mb-3">
+                                <div class="fw-black text-muted small text-uppercase mb-1" style="font-size: 0.65rem;">Schedule Range</div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="stat-pill text-dark">@item.EventStartDate.ToString("dd MMM yyyy")</span>
+                                    <i class="bi bi-arrow-right text-muted"></i>
+                                    <span class="stat-pill text-dark">@item.EventEndDate.ToString("dd MMM yyyy")</span>
+                                </div>
+                            </div>
+                            <a asp-action="Details" asp-route-id="@item.EventID" class="fw-black text-primary text-decoration-none small">
+                                VIEW DETAILS <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-calendar-x text-muted display-1 mb-3"></i>
+                <h3 class="fw-black text-muted text-uppercase">No Events Found</h3>
+            </div>
+        }
+    </div>
+</div>
+
+@* TECHNICAL REFERENCES
+   ---------------------------------------------------
+   1. Search Implementation: Use of ViewData for persistent filtering (https://learn.microsoft.com/en-us/aspnet/core/mvc/views/working-with-data)
+   2. Bootstrap Flex Grid: Column management for diverse administrative dashboards.
+   3. Conditional Rendering: Razor logic for empty state handling (Model.Any()).
+   4. UI Typography: Implementation of tracking-tight utilities for SaaS headers.
+*@
