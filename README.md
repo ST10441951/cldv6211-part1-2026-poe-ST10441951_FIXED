@@ -1,3 +1,5 @@
+Note, previous REPO for POE locked me ou, so I had to create a FIXED REPO under the same name. 
+---
 # EventEase | Cloud-Based Event & Venue Management System
 
 **Project Code:** CLDV6211-Part-3-2026-POE  
