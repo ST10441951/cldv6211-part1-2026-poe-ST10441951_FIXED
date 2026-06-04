@@ -1,4 +1,4 @@
-Note, previous REPO for POE locked me ou, so I had to create a FIXED REPO under the same name. 
+Note, previous REPO for POE locked me out, so I had to create a FIXED REPO under the same name. 
 ---
 # EventEase | Cloud-Based Event & Venue Management System
 
